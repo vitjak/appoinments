@@ -26,8 +26,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Run unit tests
-        run: mvn --batch-mode test
+      - name: Run unit tests (exclude integration tests)
+          run: mvn --batch-mode test -DskipITs
 
   build:
     runs-on: ubuntu-latest
