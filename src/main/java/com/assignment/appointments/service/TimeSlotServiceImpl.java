@@ -6,6 +6,8 @@ import com.assignment.appointments.model.TimeSlot;
 import com.assignment.appointments.repository.PractitionerRepository;
 import com.assignment.appointments.repository.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +17,7 @@ import java.util.Optional;
 @Service
 @Transactional
 class TimeSlotServiceImpl implements TimeSlotService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(TimeSlotServiceImpl.class);
     private final TimeSlotRepository timeSlotRepository;
     private final PractitionerRepository practitionerRepository;
 
@@ -32,7 +34,15 @@ class TimeSlotServiceImpl implements TimeSlotService {
     @Override
     public TimeSlot addTimeSlot(Long practitionerId, AddTimeSlotRequest request) {
         Practitioner practitioner = practitionerRepository.findById(practitionerId)
-                .orElseThrow(() -> new EntityNotFoundException("Practitioner not found with ID: " + practitionerId));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Practitioner not found with ID: " + practitionerId);
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error adding timeslot: " + e.getMessage(), e);
+                    return e;
+                });
 
         TimeSlot timeSlot = new TimeSlot();
         timeSlot.setPractitioner(practitioner);
@@ -51,7 +61,15 @@ class TimeSlotServiceImpl implements TimeSlotService {
     @Override
     public void markTimeSlotAsUnavailable(Long timeSlotId) {
         TimeSlot timeSlot = timeSlotRepository.findById(timeSlotId)
-                .orElseThrow(() -> new EntityNotFoundException("Time slot not found with ID: " + timeSlotId));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Time slot not found with ID: " + timeSlotId);
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error marking timeslot as unavailable: " + e.getMessage(), e);
+                    return e;
+                });
 
         timeSlot.setIsAvailable(false);
         timeSlotRepository.save(timeSlot);

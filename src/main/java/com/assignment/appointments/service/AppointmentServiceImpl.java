@@ -4,6 +4,8 @@ import com.assignment.appointments.dto.request.BookAppointmentRequest;
 import com.assignment.appointments.model.*;
 import com.assignment.appointments.repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +15,7 @@ import java.util.List;
 @Service
 @Transactional
 class AppointmentServiceImpl implements AppointmentService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppointmentServiceImpl.class);
     private final AppointmentRepository appointmentRepository;
     private final PatientRepository patientRepository;
     private final PractitionerRepository practitionerRepository;
@@ -35,16 +37,46 @@ class AppointmentServiceImpl implements AppointmentService {
     @Override
     public Appointment bookAppointment(BookAppointmentRequest request) {
         Patient patient = patientRepository.findById(request.getPatientId())
-                .orElseThrow(() -> new EntityNotFoundException("Patient not found with ID: " + request.getPatientId()));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Patient not found with ID: " + request.getPatientId());
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error booking appointment: " + e.getMessage(), e);
+                    return e;
+                });
 
         MedicalService medicalService = medicalServiceRepository.findById(request.getMedicalServiceId())
-                .orElseThrow(() -> new EntityNotFoundException("Service not found with ID: " + request.getMedicalServiceId()));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Service not found with ID: " + request.getMedicalServiceId());
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error booking appointment: " + e.getMessage(), e);
+                    return e;
+                });
 
         TimeSlot timeSlot = timeSlotRepository.findById(request.getTimeSlotId())
-                .orElseThrow(() -> new EntityNotFoundException("Time slot not found with ID: " + request.getTimeSlotId()));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Time slot not found with ID: " + request.getTimeSlotId());
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error booking appointment: " + e.getMessage(), e);
+                    return e;
+                });
 
         if (!timeSlot.getIsAvailable()) {
-            throw new IllegalStateException("Time slot is already occupied.");
+            IllegalStateException e = new IllegalStateException("Time slot not found with ID: " + request.getTimeSlotId());
+
+            LOGGER.atError()
+                    .addKeyValue("rawMessage", e.getMessage())
+                    .addKeyValue("exception", e.getClass().getSimpleName())
+                    .log("Error error booking appointment: " + e.getMessage(), e);
+            throw e;
         }
 
         timeSlot.setIsAvailable(false);
@@ -63,7 +95,15 @@ class AppointmentServiceImpl implements AppointmentService {
     @Override
     public void cancelAppointment(Long appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new EntityNotFoundException("Appointment with ID " + appointmentId + " not found."));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Appointment with ID " + appointmentId + " not found.");
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error cancelling appointment: " + e.getMessage(), e);
+                    return e;
+                });
 
         appointment.setStatus(Appointment.AppointmentStatus.CANCELED);
         appointmentRepository.save(appointment);

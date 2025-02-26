@@ -3,6 +3,8 @@ package com.assignment.appointments.service;
 import com.assignment.appointments.model.*;
 import com.assignment.appointments.repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +15,7 @@ import java.util.Optional;
 @Service
 @Transactional
 class WaitingListServiceImpl implements WaitingListService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(WaitingListServiceImpl.class);
     private final WaitingListRepository waitingListRepository;
     private final PractitionerRepository practitionerRepository;
     private final PatientRepository patientRepository;
@@ -38,10 +40,26 @@ class WaitingListServiceImpl implements WaitingListService {
     @Override
     public void addToWaitingList(Long patientId, Long practitionerId) {
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new EntityNotFoundException("Patient not found with ID: " + patientId));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Patient not found with ID: " + patientId);
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error adding patient to wait list: " + e.getMessage(), e);
+                    return e;
+                });
 
         Practitioner practitioner = practitionerRepository.findById(practitionerId)
-                .orElseThrow(() -> new EntityNotFoundException("Practitioner not found with ID: " + practitionerId));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Practitioner not found with ID: " + practitionerId);
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error adding patient to wait list: " + e.getMessage(), e);
+                    return e;
+                });
 
         WaitingList waitingListEntry = new WaitingList();
         waitingListEntry.setPatient(patient);
@@ -61,14 +79,36 @@ class WaitingListServiceImpl implements WaitingListService {
 
         WaitingList nextInLine = waitingList.get(0);
         TimeSlot timeSlot = timeSlotRepository.findById(timeSlotId)
-                .orElseThrow(() -> new EntityNotFoundException("Time slot not found with ID: " + timeSlotId));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Time slot not found with ID: " + timeSlotId);
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error assigning next available appointment: " + e.getMessage(), e);
+                    return e;
+                });
 
         if (!timeSlot.getIsAvailable()) {
-            throw new IllegalStateException("Selected time slot is not available.");
+            IllegalStateException e = new IllegalStateException("Selected time slot is not available.");
+
+            LOGGER.atError()
+                    .addKeyValue("rawMessage", e.getMessage())
+                    .addKeyValue("exception", e.getClass().getSimpleName())
+                    .log("Error assigning next available appointment: " + e.getMessage(), e);
+            throw e;
         }
 
         MedicalService medicalService = medicalServiceRepository.findById(serviceId)
-                .orElseThrow(() -> new EntityNotFoundException("Service not found with ID: " + serviceId));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Service not found with ID: " + serviceId);
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error assigning next available appointment: " + e.getMessage(), e);
+                    return e;
+                });
 
         timeSlot.setIsAvailable(false);
         timeSlotRepository.save(timeSlot);

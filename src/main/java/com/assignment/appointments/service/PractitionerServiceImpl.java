@@ -5,6 +5,8 @@ import com.assignment.appointments.model.Practitioner;
 import com.assignment.appointments.repository.MedicalServiceRepository;
 import com.assignment.appointments.repository.PractitionerRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +16,7 @@ import java.util.Optional;
 @Service
 @Transactional
 class PractitionerServiceImpl implements PractitionerService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(PractitionerServiceImpl.class);
     private final PractitionerRepository practitionerRepository;
     private final MedicalServiceRepository medicalServiceRepository;
 
@@ -36,10 +38,26 @@ class PractitionerServiceImpl implements PractitionerService {
     @Override
     public Practitioner assignServiceToPractitioner(Long practitionerId, Long serviceId) {
         Practitioner practitioner = practitionerRepository.findById(practitionerId)
-                .orElseThrow(() -> new EntityNotFoundException("Practitioner not found with ID: " + practitionerId));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Practitioner not found with ID: " + practitionerId);
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error assigning service to practitioner: " + e.getMessage(), e);
+                    return e;
+                });
 
         MedicalService medicalService = medicalServiceRepository.findById(serviceId)
-                .orElseThrow(() -> new EntityNotFoundException("Service not found with ID: " + serviceId));
+                .orElseThrow(() -> {
+                    EntityNotFoundException e = new EntityNotFoundException("Service not found with ID: " + serviceId);
+
+                    LOGGER.atError()
+                            .addKeyValue("rawMessage", e.getMessage())
+                            .addKeyValue("exception", e.getClass().getSimpleName())
+                            .log("Error assigning service to practitioner: " + e.getMessage(), e);
+                    return e;
+                });
 
         practitioner.getMedicalServices().add(medicalService);
         return practitionerRepository.save(practitioner);
