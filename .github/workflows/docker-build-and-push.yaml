@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Run unit tests (exclude integration tests)
-          run: mvn --batch-mode test -DskipITs
+        run: mvn --batch-mode test -DskipITs
 
   build:
     runs-on: ubuntu-latest
