@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "waiting_list")
 @Getter
 @Setter
-public class WaitingList {
+public class WaitingList extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

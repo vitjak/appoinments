@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "medical_services")
 @Getter
 @Setter
-public class MedicalService {
+public class MedicalService extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

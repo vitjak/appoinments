@@ -14,7 +14,7 @@ import java.util.List;
 @Table(name = "time_slots")
 @Getter
 @Setter
-public class TimeSlot {
+public class TimeSlot extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
