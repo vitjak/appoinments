@@ -1,0 +1,376 @@
+{
+  "info": {
+    "_postman_id": "9d4b1df9-6544-4dd4-9e27-52d2a286d664",
+    "name": "Appointment Service API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "1859589",
+    "_collection_link": "https://orange-capsule-469207.postman.co/workspace/orange-capsule-469207-Workspace~3eff80dd-2a26-4656-8979-72a476b3c86a/collection/1859589-9d4b1df9-6544-4dd4-9e27-52d2a286d664?action=share&source=collection_link&creator=1859589"
+  },
+  "item": [
+    {
+      "name": "Patients",
+      "item": [
+        {
+          "name": "Get All Patients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/patients",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "patients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Patient By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/patients/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "patients",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Janez\",\n  \"lastName\": \"Novak\",\n  \"email\": \"janez.novak@gmail.com\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/patients",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "patients"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Practitioners",
+      "item": [
+        {
+          "name": "Get All Practitioners",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/practitioners",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "practitioners"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Practitioner by ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/practitioners/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "practitioners",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign a service to practitioner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/practitioners/1/services/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "practitioners",
+                "1",
+                "services",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Time Slots",
+      "item": [
+        {
+          "name": "Get Available Time Slots by Practitioner",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/timeslots/practitioner/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "timeslots",
+                "practitioner",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Practitioner adds Time Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startTime\": \"2025-02-28T09:00:00\",\n  \"endTime\": \"2025-02-28T09:30:00\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/timeslots/1/add",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "timeslots",
+                "1",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Book an appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": 1,\n  \"medicalServiceId\": 1,\n  \"timeSlotId\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/appointments/book",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "appointments",
+                "book"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/appointments/cancel/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "appointments",
+                "cancel",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Waiting List",
+      "item": [
+        {
+          "name": "Add to Waiting List",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": 4,\n  \"practitionerId\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/waiting-list/add",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "waiting-list",
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Next Available Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"practitionerId\": 1,\n  \"timeSlotId\": 1,\n  \"medicalServiceId\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/waiting-list/assign",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "waiting-list",
+                "assign"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Waiting List for Practitioner",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/waiting-list?practitionerId=1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "waiting-list"
+              ],
+              "query": [
+                {
+                  "key": "practitionerId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
